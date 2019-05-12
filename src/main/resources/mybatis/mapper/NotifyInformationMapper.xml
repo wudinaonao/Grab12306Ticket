@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naonao.grab12306ticket.version.single.database.mapper.NotifyInformationMapper">
+
+    <!--name space-->
+    <select id="getNotifyInformationById" resultType="NotifyInformationTable">
+        select * from notify_information where id = #{id}
+    </select>
+
+    <select id="getNotifyInformationByHash" resultType="NotifyInformationTable">
+        select * from notify_information where hash = #{hash}
+    </select>
+
+
+
+    <insert id="insert">
+        insert into notify_information(
+            receiverEmail,
+            sendEmail,
+            sendEmailHost,
+            sendEmailPort,
+            sendEmailUsername,
+            sendEmailPassword,
+            receiverPhone,
+            notifyMode,
+            hash
+        )
+        values(
+            #{receiverEmail},
+            #{sendEmail},
+            #{sendEmailHost},
+            #{sendEmailPort},
+            #{sendEmailUsername},
+            #{sendEmailPassword},
+            #{receiverPhone},
+            #{notifyMode},
+            #{hash}
+        )
+    </insert>
+
+    <delete id="delete">
+        delete from notify_information where hash = #{hash}
+    </delete>
+
+    <update id="update">
+        update notify_information
+        set
+            receiverEmail = #{receiverEmail},
+            sendEmail = #{sendEmail},
+            sendEmailHost = #{sendEmailHost},
+            sendEmailPort = #{sendEmailPort},
+            sendEmailUsername = #{sendEmailUsername},
+            sendEmailPassword = #{sendEmailPassword},
+            receiverPhone = #{receiverPhone},
+            notifyMode = #{notifyMode}
+        where
+            hash = #{hash}
+    </update>
+</mapper>

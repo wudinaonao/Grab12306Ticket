@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.naonao.grab12306ticket.version.single.database.mapper.StatusInformationMapper">
+
+    <!--name space-->
+    <select id="getStatusInformationById" resultType="StatusInformationTable">
+        select * from status_information where id = #{id}
+    </select>
+
+    <select id="getStatusInformationByHash" resultType="StatusInformationTable">
+        select * from status_information where hash = #{hash}
+    </select>
+
+
+    <select id="getStatusInformationListByStatus" resultType="StatusInformationTable">
+        select * from status_information where status = #{status}
+    </select>
+
+    <select id="getStatusInformationTableListByUnfinished" resultType="StatusInformationTable">
+        select * from status_information
+        where status <![CDATA[<>]]> "running" and status <![CDATA[<>]]> "completed" limit 10
+    </select>
+
+
+    <insert id="insert">
+        insert into status_information(
+            status,
+            taskStartTime,
+            taskEndTime,
+            taskLastRunTime,
+            tryCount,
+            message,
+            hash
+        )
+        values(
+            #{status},
+            #{taskStartTime},
+            #{taskEndTime},
+            #{taskLastRunTime},
+            #{tryCount},
+            #{message},
+            #{hash}
+        )
+    </insert>
+
+    <delete id="delete">
+        delete from status_information where hash = #{hash}
+    </delete>
+
+    <update id="update">
+        update status_information
+        set
+            status = #{status},
+            taskStartTime = #{taskStartTime},
+            taskEndTime = #{taskEndTime},
+            taskLastRunTime = #{taskLastRunTime},
+            tryCount = #{tryCount}
+        where
+            hash = #{hash}
+    </update>
+</mapper>
