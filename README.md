@@ -11,6 +11,7 @@
 |----|----|
 |configuration.yml|项目配置文件|
 
+然后启动scheduler包里的Scheduler即可
 ### 配置文件内容
  * configuration.yml
  * ```yaml
