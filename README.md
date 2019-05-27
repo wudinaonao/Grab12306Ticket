@@ -1,4 +1,4 @@
-# 12306全自动抢票Java版:relieved:
+# 12306全自动抢票Java版 :relaxed:
 
 
 ## 项目说明
