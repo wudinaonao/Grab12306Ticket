@@ -1,52 +1,85 @@
-# 12306全自动抢票Java版
+# 12306全自动抢票Java版:relieved:
 
-### 项目重构中 ...
+
 ## 项目说明
-这个项目的起因是学Java没有合适的练手项目，然后想起之前用Python写的关于12306抢票的程序，所以用Java重写了一遍。<br>
-因为这是我写的第一个Java程序，代码质量并不是很好，大家将就着看。
-## 使用方法
-在 config.properties 文件里配置
-格式参见：
-+ __12306__
-    +     username12306      --> xxx            12306网站用户名
-          password12306      --> xxx            12306网站密码
-+ **抢票信息**
-    +     bookingAfterTime   --> 09:00          选择列车的时间范围
-          bookingBeforeTime  --> 12:00
-          trainDate          --> 2019-01-31     列车日期
-          fromStation        --> 西安            出发站
-          toStation          --> 运城            到达站
-          purposeCode        --> ADULT          这个默认成人票
-          userSetTrainName   --> D2568          列车号，如果未空则取符合条件的最早一班
-          passengerName      --> xxx            乘客姓名
-          documentType       --> 1              证件类型，1 是身份证， B 是护照，
-          documentNumber     --> 123456         证件号
-          mobile             --> 11111111111    手机号
-          seatType           --> 一等座，二等座   座位类型，可以包含多个
-          expectSeatNumber   --> A              期望的座位号，A,B,C,E,F  A 和 F 靠窗，这个不一定能选上
-+ **发送通知**
-    + **发件方式**，支持3种方式，email，短信，语音（打电话）
-    +     notifyMode        --->    email, sms, phone   可以选择三种方式
-    + **邮箱设置**
-    +     receiverEmail     --->    XXX@gmail.com       收件人，可以有多个
-          senderEmail       --->    XXX@gmail.com       发件邮箱
-          senderHost        --->    smtp.gmail.com      发件Smtp服务器
-          senderPort        --->    465                 发件端口
-          senderUsername    --->    XXX                 发件邮箱用户名
-          senderPassword    --->    XXX                 发件邮箱密码
-    + **短信和语音设置**
-    - 笔者封装了twilio平台的使用方式，用其他平台的可以自己重构
-    +     phoneSmsPlatformName ---> twilio              提供短信和语音平台的名字
-          accountSid           ---> XXX                 twilio 提供
-          authToken            ---> XXX                 twilio 提供
-          from                 ---> +8612312312312      twilio 提供的电话号码，每个平台格式不一样，twilio格式为：+8612312312312
-          tos                  ---> +8612312312312      接收通知的号码，可以选多个，每个平台格式不一样，twilio格式为：+8612312312312
-          soundXMLURL          ---> http://www.xxx.com/xxx.xml
-          soundXMLURL 是一个url，指向一个xml文件，具体内容参见Twilio开发者文档
-    + **Twilio 注意事项**：
-      1. 注意电话前要加国家号，例如中国为：+86 以及注意是否有发送到目标号码的权限（从Twilio网站里设置）
+12306 抢票系列 Java 版。
 
+## 使用方法
+你需要在resources文件夹下创建一个配置文件
+
+|文件名|说明|
+|----|----|
+|configuration.yml|项目配置文件|
+
+### 配置文件内容
+ * configuration.yml
+ * ```yaml
+     user:
+       username12306:        你的12306用户名
+       password12306:        你的12306密码
+       
+     platform:
+       config:
+         twilio:
+           accountSid:       从接口提供商获取
+           authToken:        从接口提供商获取
+           voiceUrl:         指向一个xml文件，xml文件内容里有一个url指向播放音频文件，详情参见接口提供商文档。
+           defaultVoiceUrl:  这个好像没啥用，我测试能不能收到通知用的
+           fromPhoneNumber:  从接口提供商获取
+         nexmo:
+           apiKey:           从接口提供商获取
+           apiSecret:        从接口提供商获取
+         yunzhixin:
+           appCode:          从接口提供商获取
+           templateId:       从接口提供商获取
+           
+     ticket:
+       afterTime:            选择列车的时间范围
+       beforeTime:           选择列车的时间范围
+       trainDate:            列车日期，格式：XXXX-XX-XX
+       fromStation:          出发站
+       toStation:            到达站
+       purposeCode:          默认成人票，请填写："ADULT"
+       trainName:            如果没有指定列车号，例如："D2323"，请填写空值：""，但是不能空着不填。空着不填返回Null报错
+       backTrainDate:        填写空值即可：""
+       passengerName:        乘车人姓名
+       documentType:         证件类型，身份证请填写："1"
+       documentNumber:       证件号
+       mobile:               手机号
+       seatType:             座位类型，可以填写多个用英文逗号分割。例如：一等座, 二等座
+       expectSeatNumber:     期望的座位号，A,B,C,E,F  A 和 F 靠窗，这个不一定能选上
+       
+     notification:
+       mode:                 接收通知的方式，例如："email, sms, phone"
+       receiverPhone:        接收通知的手机号，如果只选择了email接收方式，这个随便填即可，但不能空着
+       config:
+         phone:
+           #interface name is capitalized
+           interfaceName: TWILIO
+         sms:
+           #interface name is capitalized
+           interfaceName: NEXMO
+           title: "12306Ticket"
+           content: "Congratulations! grab the ticket, please log in to 12306 to pay."
+           defaultContent: "if you can look this message, then you can receiver notification, from 12306 grab ticket system."
+         email:
+           receiverEmail:        接收通知的邮箱，例如："xxx@gmail.com"
+           senderEmail:          发送通知的邮箱，例如："xxx@gmail.com"
+           senderEmailHost:      发送通知的邮箱主机，例如："smtp.gmail.com"
+           senderEmailPort:      接收通知的邮箱端口，例如："465"
+           senderEmailUsername:  接收通知的邮箱用户名，例如："xxx"
+           senderEmailPassword:  接收通知的邮箱密码，例如："xxx"
+           defaultTitle: "12306 grab ticket notification"
+           defaultContent: "12306 grab ticket notification test, if you can look this email, then you can receive notification."
+     
+     setting:
+       # 启动抢票代码
+       grabTicketCode: true
+     
+   ```
 ## 更新说明
++ 20190527 --> 项目重构
+   + 重新整理了下项目，之前写的代码太乱，导致后期维护困难。
 + 20190126 --> 更改单线程为多线程查询
    + 优化逻辑
    + 可以选择多个座位类型
