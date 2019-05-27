@@ -83,11 +83,9 @@ public class ConsumerPool implements Runnable{
                     // single version
                     if (!existHashInSet(queryTrainInfoReturnResult)){
                         log.info("start task");
-                        hashSet.add(ComputeHash.fromGrabTicketInformation(queryTrainInfoReturnResult.getGrabTicketInformationTable()));
+                        hashSet.add(ComputeHash.fromGrabTicketInformation(queryTrainInfoReturnResult.getGrabTicketInformationEntity()));
                         pool.execute(new QueryTrainInfoReturnResultConsumer(queryTrainInfoReturnResult, hashSet));
                     }
-                    // database version
-                    // pool.execute(new QueryTrainInfoReturnResultConsumer(queryTrainInfoReturnResult));
                 }
             }
         } catch (Exception e){
@@ -99,7 +97,7 @@ public class ConsumerPool implements Runnable{
     }
 
     private Boolean existHashInSet(QueryTrainInfoReturnResult queryTrainInfoReturnResult){
-        String hash = ComputeHash.fromGrabTicketInformation(queryTrainInfoReturnResult.getGrabTicketInformationTable());
+        String hash = ComputeHash.fromGrabTicketInformation(queryTrainInfoReturnResult.getGrabTicketInformationEntity());
         return hashSet.contains(hash);
     }
 

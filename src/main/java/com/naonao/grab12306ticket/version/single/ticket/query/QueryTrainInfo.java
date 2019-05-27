@@ -2,28 +2,29 @@ package com.naonao.grab12306ticket.version.single.ticket.query;
 
 import com.alibaba.fastjson.JSONObject;
 import com.naonao.grab12306ticket.version.single.constants.ConvertMap;
-import com.naonao.grab12306ticket.version.single.resultclass.ticket.query.TrainInfo;
-import com.naonao.grab12306ticket.version.single.scheduler.arguments.QueryTrainInfoArguments;
-import com.naonao.grab12306ticket.version.single.ticket.query.common.AbstractQuery;
-import com.naonao.grab12306ticket.version.single.tools.HttpTools;
-import com.naonao.grab12306ticket.version.single.database.table.GrabTicketInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.NotifyInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.StatusInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.UserInformationTable;
+import com.naonao.grab12306ticket.version.single.entity.GrabTicketInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.NotificationInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.StatusInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.UserInformationEntity;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.query.QueryTrainInfoReturnResult;
+import com.naonao.grab12306ticket.version.single.resultclass.ticket.query.TrainInfo;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractQuery;
+import com.naonao.grab12306ticket.version.single.ticket.query.arguments.QueryTrainInfoArguments;
+import com.naonao.grab12306ticket.version.single.tools.HttpTools;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @program: 12306grabticket_java
@@ -48,10 +49,10 @@ public class QueryTrainInfo extends AbstractQuery {
 
     private String hash;
 
-    private UserInformationTable userInformationTable;
-    private GrabTicketInformationTable grabTicketInformationTable;
-    private NotifyInformationTable notifyInformationTable;
-    private StatusInformationTable statusInformationTable;
+    private UserInformationEntity userInformationEntity;
+    private GrabTicketInformationEntity grabTicketInformationEntity;
+    private NotificationInformationEntity notificationInformationEntity;
+    private StatusInformationEntity statusInformationEntity;
 
 
 
@@ -81,10 +82,10 @@ public class QueryTrainInfo extends AbstractQuery {
         queryTrainInfoReturnResult.setSession(session);
         queryTrainInfoReturnResult.setMessage(FIND_ELIGIBLE_TRAIN);
         queryTrainInfoReturnResult.setTrainInfoList(trainInfoListMap);
-        queryTrainInfoReturnResult.setUserInformationTable(userInformationTable);
-        queryTrainInfoReturnResult.setGrabTicketInformationTable(grabTicketInformationTable);
-        queryTrainInfoReturnResult.setNotifyInformationTable(notifyInformationTable);
-        queryTrainInfoReturnResult.setStatusInformationTable(statusInformationTable);
+        queryTrainInfoReturnResult.setUserInformationEntity(userInformationEntity);
+        queryTrainInfoReturnResult.setGrabTicketInformationEntity(grabTicketInformationEntity);
+        queryTrainInfoReturnResult.setNotificationInformationEntity(notificationInformationEntity);
+        queryTrainInfoReturnResult.setStatusInformationEntity(statusInformationEntity);
         return queryTrainInfoReturnResult;
     }
 
@@ -101,10 +102,10 @@ public class QueryTrainInfo extends AbstractQuery {
 
         hash = queryTrainInfoArguments.getHash();
 
-        userInformationTable = queryTrainInfoArguments.getUserInformationTable();
-        grabTicketInformationTable = queryTrainInfoArguments.getGrabTicketInformationTable();
-        notifyInformationTable = queryTrainInfoArguments.getNotifyInformationTable();
-        statusInformationTable = queryTrainInfoArguments.getStatusInformationTable();
+        userInformationEntity = queryTrainInfoArguments.getUserInformationEntity();
+        grabTicketInformationEntity = queryTrainInfoArguments.getGrabTicketInformationEntity();
+        notificationInformationEntity = queryTrainInfoArguments.getNotificationInformationEntity();
+        statusInformationEntity = queryTrainInfoArguments.getStatusInformationEntity();
     }
     private List<TrainInfo> getTrainInfoList(URI queryUri){
         HttpGet queryTrainInfoRequest = HttpTools.setRequestHeader(new HttpGet(queryUri), true, false, true);
@@ -226,10 +227,10 @@ public class QueryTrainInfo extends AbstractQuery {
         queryTrainInfoReturnResult.setStatus(false);
         queryTrainInfoReturnResult.setSession(session);
         queryTrainInfoReturnResult.setMessage(message);
-        queryTrainInfoReturnResult.setUserInformationTable(userInformationTable);
-        queryTrainInfoReturnResult.setGrabTicketInformationTable(grabTicketInformationTable);
-        queryTrainInfoReturnResult.setNotifyInformationTable(notifyInformationTable);
-        queryTrainInfoReturnResult.setStatusInformationTable(statusInformationTable);
+        queryTrainInfoReturnResult.setUserInformationEntity(userInformationEntity);
+        queryTrainInfoReturnResult.setGrabTicketInformationEntity(grabTicketInformationEntity);
+        queryTrainInfoReturnResult.setNotificationInformationEntity(notificationInformationEntity);
+        queryTrainInfoReturnResult.setStatusInformationEntity(statusInformationEntity);
         return queryTrainInfoReturnResult;
     }
 

@@ -1,19 +1,18 @@
 package com.naonao.grab12306ticket.version.single.scheduler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.naonao.grab12306ticket.version.single.scheduler.common.AbstractScheduler;
-import com.naonao.grab12306ticket.version.single.scheduler.initialization.CheckConfiguration;
+import com.naonao.grab12306ticket.version.single.entity.yml.Configuration;
+import com.naonao.grab12306ticket.version.single.scheduler.base.AbstractScheduler;
 import com.naonao.grab12306ticket.version.single.scheduler.initialization.CheckTicketConfiguration;
 import com.naonao.grab12306ticket.version.single.scheduler.queue.QueryTrainInfoReturnResultQueue;
+import com.naonao.grab12306ticket.version.single.scheduler.thread.runnable.pool.ConsumerPool;
 import com.naonao.grab12306ticket.version.single.scheduler.thread.runnable.pool.ProducerPool;
 import com.naonao.grab12306ticket.version.single.scheduler.thread.strategy.RejectExecutionHandlerBlocking;
-import com.naonao.grab12306ticket.version.single.scheduler.thread.runnable.pool.ConsumerPool;
+import com.naonao.grab12306ticket.version.single.tools.GeneralTools;
 import lombok.extern.log4j.Log4j;
 
 import java.util.Set;
 import java.util.concurrent.*;
-
-import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 
 /**
  * @program: 12306grabticket_java
@@ -24,8 +23,12 @@ import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 @Log4j
 public class Scheduler extends AbstractScheduler {
 
+    private Configuration configuration;
     private void start(){
-        if (!checkConfiguration()){
+        checkConfiguration();
+        configuration = GeneralTools.getConfiguration();
+        if (!configuration.getSetting().getGrabTicketCode()){
+            log.info("not started grab ticket core");
             return;
         }
         ExecutorService pool = createThreadPool();
@@ -37,17 +40,14 @@ public class Scheduler extends AbstractScheduler {
 
     /**
      * check configuration
-     *
-     * @return  Boolean
      */
-    private Boolean checkConfiguration(){
-        CheckConfiguration checkConfiguration = new CheckConfiguration();
-        CheckTicketConfiguration checkTicketConfiguration = new CheckTicketConfiguration();
-        return checkConfiguration.check() && checkTicketConfiguration.check();
+    private void checkConfiguration(){
+        GeneralTools.checkConfiguration();
+        new CheckTicketConfiguration().check();
     }
+
     /**
      * create a thread pool for start ProducerPool and ConsumePool
-     *
      * @return  ExecutorService
      */
     private ExecutorService createThreadPool(){
@@ -76,16 +76,12 @@ public class Scheduler extends AbstractScheduler {
      * @return  QueryTrainInfoReturnResultQueue
      */
     private QueryTrainInfoReturnResultQueue createQueryTrainInfoReturnResultQueue(){
-        return new QueryTrainInfoReturnResultQueue(128);
+        return new QueryTrainInfoReturnResultQueue(1024);
     }
-
-
-
 
     public static void main(String[] args) {
         Scheduler scheduler = new Scheduler();
         scheduler.start();
-        // scheduler.checkConfigure();
     }
 
 }

@@ -5,7 +5,7 @@ import com.naonao.grab12306ticket.version.single.constants.ConvertMap;
 import com.naonao.grab12306ticket.version.single.tools.GeneralTools;
 import com.naonao.grab12306ticket.version.single.tools.HttpTools;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.booking.CheckOrderInfoReturnResult;
-import com.naonao.grab12306ticket.version.single.ticket.booking.common.AbstractBooking;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractBooking;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;

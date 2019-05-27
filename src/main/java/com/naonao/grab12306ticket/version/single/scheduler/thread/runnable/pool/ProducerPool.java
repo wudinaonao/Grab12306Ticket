@@ -1,25 +1,21 @@
 package com.naonao.grab12306ticket.version.single.scheduler.thread.runnable.pool;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.naonao.grab12306ticket.version.single.scheduler.arguments.QueryTrainInfoArguments;
+import com.naonao.grab12306ticket.version.single.entity.GrabTicketInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.NotificationInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.StatusInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.UserInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.yml.Configuration;
 import com.naonao.grab12306ticket.version.single.scheduler.queue.QueryTrainInfoReturnResultQueue;
 import com.naonao.grab12306ticket.version.single.scheduler.thread.runnable.QueryTrainInfoReturnResultProducer;
 import com.naonao.grab12306ticket.version.single.scheduler.thread.strategy.RejectExecutionHandlerBlocking;
-import com.naonao.grab12306ticket.version.single.constants.TaskStatusName;
-import com.naonao.grab12306ticket.version.single.database.Database;
-import com.naonao.grab12306ticket.version.single.database.table.GrabTicketInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.NotifyInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.StatusInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.UserInformationTable;
+import com.naonao.grab12306ticket.version.single.ticket.query.arguments.QueryTrainInfoArguments;
 import com.naonao.grab12306ticket.version.single.tools.GeneralTools;
 import lombok.extern.log4j.Log4j;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.*;
 
 /**
@@ -33,19 +29,8 @@ public class ProducerPool implements Runnable{
 
 
     private QueryTrainInfoReturnResultQueue queryTrainInfoReturnResultQueue;
-
-    private Database database;
-
-    private Properties properties;
-
-    // /**
-    //  * database version
-    //  * @param queryTrainInfoReturnResultQueue   queryTrainInfoReturnResultQueue
-    //  */
-    // public ProducerPool(QueryTrainInfoReturnResultQueue queryTrainInfoReturnResultQueue){
-    //     this.queryTrainInfoReturnResultQueue = queryTrainInfoReturnResultQueue;
-    //     this.database = new Database();
-    // }
+    
+    private Configuration configuration;
 
     /**
      * single version
@@ -53,7 +38,7 @@ public class ProducerPool implements Runnable{
      */
     public ProducerPool(QueryTrainInfoReturnResultQueue queryTrainInfoReturnResultQueue){
         this.queryTrainInfoReturnResultQueue = queryTrainInfoReturnResultQueue;
-        this.properties = GeneralTools.getConfig();
+        this.configuration = GeneralTools.getConfiguration();
     }
 
     @Override
@@ -99,7 +84,7 @@ public class ProducerPool implements Runnable{
             }
             for (QueryTrainInfoArguments queryTrainInfoArguments: queryTrainInfoArgumentsList){
                 if (queryTrainInfoArguments != null){
-                    // log.info("put a information to queue ...");
+                    log.info("querying train information ......");
                     pool.execute(new QueryTrainInfoReturnResultProducer(
                             queryTrainInfoReturnResultQueue,
                             queryTrainInfoArguments
@@ -114,38 +99,11 @@ public class ProducerPool implements Runnable{
         }
     }
 
-    // /**
-    //  * database version
-    //  *
-    //  * get QueryTrainInfoArguments object list by database
-    //  * if status is wait, then get
-    //  *
-    //  * @return  List<QueryTrainInfoArguments>
-    //  */
-    // private List<QueryTrainInfoArguments> getQueryTrainInfoArgumentsList(){
-    //     List<StatusInformationTable> statusInformationTableList = database.query().getStatusInformationTableListByUnfinished();
-    //     if (statusInformationTableList.size() <= 0){
-    //         return null;
-    //     }
-    //     List<QueryTrainInfoArguments> queryTrainInfoArgumentsList = new ArrayList<>();
-    //     for (StatusInformationTable statusInformationTable: statusInformationTableList){
-    //         QueryTrainInfoArguments queryTrainInfoArguments = makeQueryTrainInfoArguments(statusInformationTable);
-    //         if (queryTrainInfoArguments != null){
-    //             queryTrainInfoArgumentsList.add(queryTrainInfoArguments);
-    //         }
-    //     }
-    //     if (queryTrainInfoArgumentsList.size() <= 0){
-    //         return null;
-    //     }
-    //     return queryTrainInfoArgumentsList;
-    // }
 
     /**
      * single version
-     *
      * get QueryTrainInfoArguments object list by configuration file
      * make 10 QueryTrainInfoArguments each list
-     *
      * @return  List<QueryTrainInfoArguments>
      */
     private List<QueryTrainInfoArguments> getQueryTrainInfoArgumentsList(){
@@ -156,112 +114,63 @@ public class ProducerPool implements Runnable{
         return queryTrainInfoArgumentsList;
     }
 
-
-
-    /**
-     * database version
-     *
-     * make QueryTrainInfoArguments object by statusTable object
-     *
-     * first get hash from statusTable, then get UserInformationTable,
-     * GrabTicketInformationTable, NotifyInformationTable object.
-     * second get each property value used to encapsulate the
-     * QueryTrainInfoArguments object
-     *
-     * @param statusInformationTable    statusInformationTable
-     * @return                          QueryTrainInfoArguments
-     */
-    private QueryTrainInfoArguments makeQueryTrainInfoArguments(StatusInformationTable statusInformationTable){
-        // get data
-        String hash = statusInformationTable.getHash();
-        UserInformationTable userInformationTable = database.query().getUserInformationByHash(hash);
-        GrabTicketInformationTable grabTicketInformationTable = database.query().getGrabTicketInformationByHash(hash);
-        NotifyInformationTable notifyInformationTable = database.query().getNotifyInformationByHash(hash);
-        String beforeTime = grabTicketInformationTable.getBeforeTime();
-        String afterTime = grabTicketInformationTable.getAfterTime();
-        String trainDate = grabTicketInformationTable.getBackTrainDate();
-        String fromStation = grabTicketInformationTable.getFromStation();
-        String toStation = grabTicketInformationTable.getToStation();
-        String purposeCode = grabTicketInformationTable.getPurposeCode();
-        String trainName = grabTicketInformationTable.getTrainName();
-        // instance a QueryTrainInfoArguments
-        QueryTrainInfoArguments queryTrainInfoArguments = new QueryTrainInfoArguments();
-        queryTrainInfoArguments.setBeforeTime(beforeTime);
-        queryTrainInfoArguments.setAfterTime(afterTime);
-        queryTrainInfoArguments.setTrainDate(trainDate);
-        queryTrainInfoArguments.setFromStation(fromStation);
-        queryTrainInfoArguments.setToStation(toStation);
-        queryTrainInfoArguments.setPurposeCode(purposeCode);
-        queryTrainInfoArguments.setTrainName(trainName);
-        queryTrainInfoArguments.setHash(hash);
-        queryTrainInfoArguments.setUserInformationTable(userInformationTable);
-        queryTrainInfoArguments.setGrabTicketInformationTable(grabTicketInformationTable);
-        queryTrainInfoArguments.setNotifyInformationTable(notifyInformationTable);
-        queryTrainInfoArguments.setStatusInformationTable(statusInformationTable);
-        if (!checkQueryTrainInfoArguments(queryTrainInfoArguments)){
-            return null;
-        }
-        return queryTrainInfoArguments;
-    }
+    
 
     /**
      * single version
-     *
      * make QueryTrainInfoArguments object from configuration file
      * load information
-     *
      * @return  QueryTrainInfoArguments
      */
     private QueryTrainInfoArguments makeQueryTrainInfoArguments(){
-        UserInformationTable userInformationTable = new UserInformationTable();
-        userInformationTable.setUsername12306(properties.getProperty("12306.username12306"));
-        userInformationTable.setPassword12306(properties.getProperty("12306.password12306"));
+        UserInformationEntity userInformationEntity = new UserInformationEntity();
+        userInformationEntity.setUsername12306(configuration.getUser().getUsername12306());
+        userInformationEntity.setPassword12306(configuration.getUser().getPassword12306());
 
-        GrabTicketInformationTable grabTicketInformationTable = new GrabTicketInformationTable();
-        grabTicketInformationTable.setAfterTime(properties.getProperty("Ticket.afterTime"));
-        grabTicketInformationTable.setBeforeTime(properties.getProperty("Ticket.beforeTime"));
-        grabTicketInformationTable.setTrainDate(properties.getProperty("Ticket.trainDate"));
-        grabTicketInformationTable.setFromStation(properties.getProperty("Ticket.fromStation"));
-        grabTicketInformationTable.setToStation(properties.getProperty("Ticket.toStation"));
-        grabTicketInformationTable.setPurposeCode(properties.getProperty("Ticket.purposeCode"));
-        grabTicketInformationTable.setTrainName(properties.getProperty("Ticket.trainName"));
-        grabTicketInformationTable.setBackTrainDate(currentDate());
-        grabTicketInformationTable.setPassengerName(properties.getProperty("Ticket.passengerName"));
-        grabTicketInformationTable.setDocumentType(properties.getProperty("Ticket.documentType"));
-        grabTicketInformationTable.setDocumentNumber(properties.getProperty("Ticket.documentNumber"));
-        grabTicketInformationTable.setMobile(properties.getProperty("Ticket.mobile"));
-        grabTicketInformationTable.setSeatType(properties.getProperty("Ticket.seatType"));
-        grabTicketInformationTable.setExpectSeatNumber(properties.getProperty("Ticket.expectSeatNumber"));
+        GrabTicketInformationEntity grabTicketInformationEntity = new GrabTicketInformationEntity();
+        grabTicketInformationEntity.setAfterTime(configuration.getTicket().getAfterTime());
+        grabTicketInformationEntity.setBeforeTime(configuration.getTicket().getBeforeTime());
+        grabTicketInformationEntity.setTrainDate(configuration.getTicket().getTrainDate());
+        grabTicketInformationEntity.setFromStation(configuration.getTicket().getFromStation());
+        grabTicketInformationEntity.setToStation(configuration.getTicket().getToStation());
+        grabTicketInformationEntity.setPurposeCode(configuration.getTicket().getPurposeCode());
+        grabTicketInformationEntity.setTrainName(configuration.getTicket().getTrainName());
+        grabTicketInformationEntity.setBackTrainDate(GeneralTools.currentDate());
+        grabTicketInformationEntity.setPassengerName(configuration.getTicket().getPassengerName());
+        grabTicketInformationEntity.setDocumentType(configuration.getTicket().getDocumentType());
+        grabTicketInformationEntity.setDocumentNumber(configuration.getTicket().getDocumentNumber());
+        grabTicketInformationEntity.setMobile(configuration.getTicket().getMobile());
+        grabTicketInformationEntity.setSeatType(configuration.getTicket().getSeatType());
+        grabTicketInformationEntity.setExpectSeatNumber(configuration.getTicket().getExpectSeatNumber());
 
-        NotifyInformationTable notifyInformationTable = new NotifyInformationTable();
-        notifyInformationTable.setReceiverEmail(properties.getProperty("Email.receiverEmail"));
-        notifyInformationTable.setSendEmail(properties.getProperty("Email.senderEmail"));
-        notifyInformationTable.setSendEmailHost(properties.getProperty("Email.senderHost"));
-        notifyInformationTable.setSendEmailPort(properties.getProperty("Email.senderPort"));
-        notifyInformationTable.setSendEmailUsername(properties.getProperty("Email.senderUsername"));
-        notifyInformationTable.setSendEmailPassword(properties.getProperty("Email.senderPassword"));
-        notifyInformationTable.setReceiverPhone(properties.getProperty("Phone.number"));
-        notifyInformationTable.setNotifyMode(properties.getProperty("notifyMode"));
+        NotificationInformationEntity notificationInformationEntity = new NotificationInformationEntity();
+        notificationInformationEntity.setReceiverEmail(configuration.getNotification().getConfig().getEmail().getReceiverEmail());
+        notificationInformationEntity.setSendEmail(configuration.getNotification().getConfig().getEmail().getSenderEmail());
+        notificationInformationEntity.setSendEmailHost(configuration.getNotification().getConfig().getEmail().getSenderEmailHost());
+        notificationInformationEntity.setSendEmailPort(configuration.getNotification().getConfig().getEmail().getSenderEmailPort());
+        notificationInformationEntity.setSendEmailUsername(configuration.getNotification().getConfig().getEmail().getSenderEmailUsername());
+        notificationInformationEntity.setSendEmailPassword(configuration.getNotification().getConfig().getEmail().getSenderEmailPassword());
+        notificationInformationEntity.setReceiverPhone(configuration.getNotification().getReceiverPhone());
+        notificationInformationEntity.setNotificationMode(configuration.getNotification().getMode());
 
-        StatusInformationTable statusInformationTable = new StatusInformationTable();
+        StatusInformationEntity statusInformationEntity = new StatusInformationEntity();
 
         QueryTrainInfoArguments queryTrainInfoArguments = new QueryTrainInfoArguments();
-        queryTrainInfoArguments.setAfterTime(properties.getProperty("Ticket.afterTime"));
-        queryTrainInfoArguments.setBeforeTime(properties.getProperty("Ticket.beforeTime"));
-        queryTrainInfoArguments.setTrainDate(properties.getProperty("Ticket.trainDate"));
-        queryTrainInfoArguments.setFromStation(properties.getProperty("Ticket.fromStation"));
-        queryTrainInfoArguments.setToStation(properties.getProperty("Ticket.toStation"));
-        queryTrainInfoArguments.setPurposeCode(properties.getProperty("Ticket.purposeCode"));
-        queryTrainInfoArguments.setTrainName(properties.getProperty("Ticket.trainName"));
-        queryTrainInfoArguments.setUserInformationTable(userInformationTable);
-        queryTrainInfoArguments.setGrabTicketInformationTable(grabTicketInformationTable);
-        queryTrainInfoArguments.setNotifyInformationTable(notifyInformationTable);
-        queryTrainInfoArguments.setStatusInformationTable(statusInformationTable);
+        queryTrainInfoArguments.setAfterTime(configuration.getTicket().getAfterTime());
+        queryTrainInfoArguments.setBeforeTime(configuration.getTicket().getBeforeTime());
+        queryTrainInfoArguments.setTrainDate(configuration.getTicket().getTrainDate());
+        queryTrainInfoArguments.setFromStation(configuration.getTicket().getFromStation());
+        queryTrainInfoArguments.setToStation(configuration.getTicket().getToStation());
+        queryTrainInfoArguments.setPurposeCode(configuration.getTicket().getPurposeCode());
+        queryTrainInfoArguments.setTrainName(configuration.getTicket().getTrainName());
+        queryTrainInfoArguments.setUserInformationEntity(userInformationEntity);
+        queryTrainInfoArguments.setGrabTicketInformationEntity(grabTicketInformationEntity);
+        queryTrainInfoArguments.setNotificationInformationEntity(notificationInformationEntity);
+        queryTrainInfoArguments.setStatusInformationEntity(statusInformationEntity);
         return queryTrainInfoArguments;
     }
     /**
      * check if input queryTrainInfoArguments instance attributes has null value
-     *
      * @param queryTrainInfoArguments   queryTrainInfoArguments
      * @return                          boolean
      */
@@ -283,22 +192,5 @@ public class ProducerPool implements Runnable{
         return true;
     }
 
-    /**
-     * get a queryTrainInfoArguments object,
-     * then update database status table status column is RUNNING.
-     *
-     * @param queryTrainInfoArguments   queryTrainInfoArguments
-     */
-    private void updateDatabase(QueryTrainInfoArguments queryTrainInfoArguments){
-        StatusInformationTable statusInformationTable = queryTrainInfoArguments.getStatusInformationTable();
-        statusInformationTable.setStatus(TaskStatusName.RUNNING.getTaskStatusName());
-        database.update().statusInformation(statusInformationTable);
-    }
-
-
-    private String currentDate(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return simpleDateFormat.format(new Date());
-    }
 
 }

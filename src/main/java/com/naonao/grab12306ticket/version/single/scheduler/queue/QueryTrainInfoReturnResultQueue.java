@@ -16,9 +16,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 @Log4j
 public class QueryTrainInfoReturnResultQueue {
 
-
-    
-
     ArrayBlockingQueue<QueryTrainInfoReturnResult> queryTrainInfoReturnResultsQueue;
 
     public QueryTrainInfoReturnResultQueue(Integer queueSize){

@@ -3,7 +3,7 @@ package com.naonao.grab12306ticket.version.single.ticket.booking;
 import com.alibaba.fastjson.JSONObject;
 import com.naonao.grab12306ticket.version.single.tools.HttpTools;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.booking.InitDcReturnResult;
-import com.naonao.grab12306ticket.version.single.ticket.booking.common.AbstractBooking;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractBooking;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;

@@ -1,12 +1,9 @@
 package com.naonao.grab12306ticket.version.single.ticket.booking;
 
 
-import com.naonao.grab12306ticket.version.single.resultclass.ticket.login.LoginReturnResult;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.query.QueryTrainInfoReturnResult;
 import com.naonao.grab12306ticket.version.single.ticket.login.CheckUserStatus;
-import com.naonao.grab12306ticket.version.single.ticket.booking.common.AbstractBooking;
-import com.naonao.grab12306ticket.version.single.ticket.login.Login;
-import com.naonao.grab12306ticket.version.single.tools.HttpTools;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractBooking;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.booking.*;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -189,16 +186,16 @@ public class Booking extends AbstractBooking {
         secretStr = queryTrainInfoReturnResult.getTrainInfoList().get(0).getSecretStr();
         trainDate = formatDate(queryTrainInfoReturnResult.getTrainInfoList().get(0).getTrainDate());
         // backTrainDate may is trainDate, identical
-        backTrainDate = queryTrainInfoReturnResult.getGrabTicketInformationTable().getBackTrainDate();
-        purposeCode = queryTrainInfoReturnResult.getGrabTicketInformationTable().getPurposeCode();
-        queryFromStationName = queryTrainInfoReturnResult.getGrabTicketInformationTable().getFromStation();
-        queryToStationName = queryTrainInfoReturnResult.getGrabTicketInformationTable().getToStation();
-        passengerName = queryTrainInfoReturnResult.getGrabTicketInformationTable().getPassengerName();
-        documentType = queryTrainInfoReturnResult.getGrabTicketInformationTable().getDocumentType();
-        documentNumber = queryTrainInfoReturnResult.getGrabTicketInformationTable().getDocumentNumber();
-        mobile = queryTrainInfoReturnResult.getGrabTicketInformationTable().getMobile();
-        seatTypeArr = queryTrainInfoReturnResult.getGrabTicketInformationTable().getSeatType().split(",");
-        expectSeatNumber = queryTrainInfoReturnResult.getGrabTicketInformationTable().getExpectSeatNumber();
+        backTrainDate = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getBackTrainDate();
+        purposeCode = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getPurposeCode();
+        queryFromStationName = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getFromStation();
+        queryToStationName = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getToStation();
+        passengerName = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getPassengerName();
+        documentType = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getDocumentType();
+        documentNumber = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getDocumentNumber();
+        mobile = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getMobile();
+        seatTypeArr = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getSeatType().split(",");
+        expectSeatNumber = queryTrainInfoReturnResult.getGrabTicketInformationEntity().getExpectSeatNumber();
     }
 
     private Boolean checkUserStatus(){

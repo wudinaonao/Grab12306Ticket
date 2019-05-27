@@ -1,11 +1,11 @@
 package com.naonao.grab12306ticket.version.single.resultclass.ticket.query;
 
 
+import com.naonao.grab12306ticket.version.single.entity.GrabTicketInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.NotificationInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.StatusInformationEntity;
+import com.naonao.grab12306ticket.version.single.entity.UserInformationEntity;
 import com.naonao.grab12306ticket.version.single.resultclass.IReturnResult;
-import com.naonao.grab12306ticket.version.single.database.table.GrabTicketInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.NotifyInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.StatusInformationTable;
-import com.naonao.grab12306ticket.version.single.database.table.UserInformationTable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -29,9 +29,9 @@ public class QueryTrainInfoReturnResult implements IReturnResult {
 
     private List<TrainInfo> trainInfoList;
 
-    private UserInformationTable userInformationTable;
-    private GrabTicketInformationTable grabTicketInformationTable;
-    private NotifyInformationTable notifyInformationTable;
-    private StatusInformationTable statusInformationTable;
+    private UserInformationEntity userInformationEntity;
+    private GrabTicketInformationEntity grabTicketInformationEntity;
+    private NotificationInformationEntity notificationInformationEntity;
+    private StatusInformationEntity statusInformationEntity;
 
 }

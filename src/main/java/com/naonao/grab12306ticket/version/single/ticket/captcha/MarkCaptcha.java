@@ -3,7 +3,7 @@ package com.naonao.grab12306ticket.version.single.ticket.captcha;
 import com.alibaba.fastjson.JSONObject;
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.captcha.MarkCaptchaReturnResult;
 import com.naonao.grab12306ticket.version.single.tools.HttpTools;
-import com.naonao.grab12306ticket.version.single.ticket.captcha.common.AbstractCaptcha;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractCaptcha;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;

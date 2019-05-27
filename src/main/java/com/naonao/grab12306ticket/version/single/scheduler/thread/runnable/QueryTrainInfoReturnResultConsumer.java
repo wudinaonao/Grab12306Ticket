@@ -24,13 +24,7 @@ public class QueryTrainInfoReturnResultConsumer implements Runnable{
 
     private Set<String> hashSet;
 
-    /**
-     * database version
-     * @param queryTrainInfoReturnResult    queryTrainInfoReturnResult
-     */
-    public QueryTrainInfoReturnResultConsumer(QueryTrainInfoReturnResult queryTrainInfoReturnResult){
-        this.queryTrainInfoReturnResult = queryTrainInfoReturnResult;
-    }
+
 
     /**
      * single version
@@ -51,10 +45,6 @@ public class QueryTrainInfoReturnResultConsumer implements Runnable{
     @Override
     public void run() {
         // here write queryTrainInfoReturnResult processing method after getting train information
-        // database version
-        // if (queryTrainInfoReturnResult != null){
-        //     new QueryTrainInfoReturnResultHandle(queryTrainInfoReturnResult).hanlde();
-        // }
         // single version
         if (queryTrainInfoReturnResult != null){
             new QueryTrainInfoReturnResultHandle(queryTrainInfoReturnResult, hashSet).handle();

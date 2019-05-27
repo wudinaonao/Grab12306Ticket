@@ -1,6 +1,6 @@
 package com.naonao.grab12306ticket.version.single.tools;
 
-import com.naonao.grab12306ticket.version.single.database.table.GrabTicketInformationTable;
+import com.naonao.grab12306ticket.version.single.entity.GrabTicketInformationEntity;
 import lombok.extern.log4j.Log4j;
 
 import java.security.MessageDigest;
@@ -38,14 +38,14 @@ public class ComputeHash {
         return computeHash(originString, SHA512);
     }
 
-    public static String fromGrabTicketInformation(GrabTicketInformationTable grabTicketInformationTable){
+    public static String fromGrabTicketInformation(GrabTicketInformationEntity grabTicketInformationEntity){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(grabTicketInformationTable.getTrainDate());
-        stringBuilder.append(grabTicketInformationTable.getFromStation());
-        stringBuilder.append(grabTicketInformationTable.getToStation());
-        stringBuilder.append(grabTicketInformationTable.getPassengerName());
-        stringBuilder.append(grabTicketInformationTable.getDocumentType());
-        stringBuilder.append(grabTicketInformationTable.getDocumentNumber());
+        stringBuilder.append(grabTicketInformationEntity.getTrainDate());
+        stringBuilder.append(grabTicketInformationEntity.getFromStation());
+        stringBuilder.append(grabTicketInformationEntity.getToStation());
+        stringBuilder.append(grabTicketInformationEntity.getPassengerName());
+        stringBuilder.append(grabTicketInformationEntity.getDocumentType());
+        stringBuilder.append(grabTicketInformationEntity.getDocumentNumber());
         return md5(stringBuilder.toString());
     }
 

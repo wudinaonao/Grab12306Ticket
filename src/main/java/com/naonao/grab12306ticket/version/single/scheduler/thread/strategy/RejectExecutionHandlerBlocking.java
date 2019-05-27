@@ -20,12 +20,11 @@ public class RejectExecutionHandlerBlocking  implements RejectedExecutionHandler
      */
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        // if (!executor.isShutdown()){
-        //     while (executor.getQueue().remainingCapacity() == 0){
-        //         executor.execute(r);
-        //     }
-        // }
-        return;
+        if (!executor.isShutdown()){
+            while (executor.getQueue().remainingCapacity() == 0){
+                executor.execute(r);
+            }
+        }
     }
 
 }

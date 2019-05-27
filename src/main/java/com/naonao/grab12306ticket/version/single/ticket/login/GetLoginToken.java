@@ -3,7 +3,7 @@ package com.naonao.grab12306ticket.version.single.ticket.login;
 import com.alibaba.fastjson.JSONObject;
 
 import com.naonao.grab12306ticket.version.single.resultclass.ticket.login.GetLoginTokenReturnResult;
-import com.naonao.grab12306ticket.version.single.ticket.login.common.AbstractLogin;
+import com.naonao.grab12306ticket.version.single.ticket.base.AbstractLogin;
 import com.naonao.grab12306ticket.version.single.tools.HttpTools;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
